@@ -1,0 +1,14 @@
+{
+	"name" : "ahmedali5530/db",
+	"description" : "new class to handle with database using pdo",
+	"authors": [
+        {
+            "name": "ahmedali5530",
+            "email": "ahmedali5530@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+    	"php": ">=5.3.0"
+    }
+}
