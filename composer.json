@@ -12,12 +12,8 @@
     	"php": ">=5.3.0"
     },
     "autoload": {
-        "files": [
-            "src/Illuminate/Foundation/helpers.php",
-            "src/Illuminate/Support/helpers.php"
-        ],
         "psr-4": {
-            "DB\\": "src/Illuminate/"
+            "DB\\": "src/DB/"
         }
     }
 }
