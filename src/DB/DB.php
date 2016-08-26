@@ -3,6 +3,8 @@ namespace DB;
 /**
 *   Db class update with PDO for POSR and other projects
 **/
+use PDO;
+
 class DB{
 
     //database driver, default is mysql
