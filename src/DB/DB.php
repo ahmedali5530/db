@@ -5,6 +5,7 @@ namespace DB;
 **/
 
 use PDO;
+use DB\Exceptions\QueryException;
 
 class DB{
 
@@ -30,7 +31,7 @@ class DB{
     protected $prefix = '';
 
     //pdo object
-    protected $pdo;
+    protected static $pdo;
 
     //statement object
     protected $stmt;
@@ -70,18 +71,25 @@ class DB{
             $this->password = $password;
             $this->prefix = $prefix;
             
-            try {
-                $this->pdo = new PDO($this->driver.':host='.$this->host.';dbname='.$this->database, $this->username, $this->password);
+            
+        }
+    }
+
+    /**
+    *   connect to database
+    **/
+    public static function connect(array $options){
+        try {
+                self::$pdo = new PDO($this->driver.':host='.$this->host.';dbname='.$this->database, $this->username, $this->password);
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, self::FETCH_AS_OBJECT);
             } catch(PDOException $e){
                 throw $e;
             }
-        }
     }
 
     /**
-    *   get the default pdo instance
+    *   get the current pdo instance
     **/
     public function getPdo(){
         return $this->pdo;
@@ -107,8 +115,6 @@ class DB{
         return $this->table;
     }
 
-
-
     /**
     *   build the query and return the result set
     **/
@@ -131,25 +137,11 @@ class DB{
     }
 
     /**
-    *   alias of getArray(), for compatibility only
-    **/
-    public function get_array(){
-        return $this->getArray();
-    }
-
-    /**
     *   get the single row from database as an array
     **/
     public function getRowArray(){
         $stmt = $this->get();
         return $stmt->fetch(self::FETCH_AS_ARRAY);
-    }
-
-    /**
-    *   alias of getRowArray(), for compatibility only
-    **/
-    public function get_row_array(){
-        return $this->getRowArray();
     }
 
     /**
@@ -160,17 +152,39 @@ class DB{
     }
 
     /**
-    *   alias of getObject(), for compatibility only
-    **/
-    public function get_object(){
-        return $this->getObject();
-    }
-
-    /**
     *   get the single row from database as an object
     **/
     public function getRowObject(){
         return $this->get()->fetch();
+    }
+
+    
+
+    /***********************************
+    *
+    *   methods for just backward compatibility only
+    *
+    ************************************/
+
+    /**
+    *   alias of getArray(), for compatibility only
+    **/
+    public function get_array(){
+        return $this->getArray();
+    }
+
+    /**
+    *   alias of getRowArray(), for compatibility only
+    **/
+    public function get_row_array(){
+        return $this->getRowArray();
+    }
+
+    /**
+    *   alias of getObject(), for compatibility only
+    **/
+    public function get_object(){
+        return $this->getObject();
     }
 
     /**
