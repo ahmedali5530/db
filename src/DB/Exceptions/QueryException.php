@@ -1,5 +1,5 @@
 <?php
-namespace DB\Exception;
+namespace DB\Exceptions;
 
 use Exception;
 

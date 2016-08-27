@@ -1,6 +1,6 @@
-composer.json
 index.php
 <<<<<<< HEAD
 =======
 readme.md
 >>>>>>> origin/master
+.vendor
