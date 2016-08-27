@@ -3,6 +3,9 @@ namespace DB;
 /**
 *   Db class update with PDO for POSR and other projects
 **/
+
+use PDO;
+
 class DB{
 
     //database driver, default is mysql
@@ -60,11 +63,13 @@ class DB{
     **/
     public function __construct($host = null, $username = null, $password = null, $database = null, $prefix = '', $port = 3306){
         if(func_num_args() > 0){
+
             $this->host = $host;
             $this->database = $database;
             $this->username = $username;
             $this->password = $password;
             $this->prefix = $prefix;
+            
             try {
                 $this->pdo = new PDO($this->driver.':host='.$this->host.';dbname='.$this->database, $this->username, $this->password);
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
