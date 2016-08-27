@@ -13,19 +13,19 @@ class DB{
     protected $driver = 'mysql';
 
     //database server host
-    protected $host;
+    private $host;
 
     //database name to be connect
-    protected $database;
+    private $database;
 
     //database port from which to connect
-    protected $port = 3306;
+    private $port = 3306;
 
     //username of database server
-    protected $username = 'root';
+    private $username = 'root';
 
     //password of database server
-    protected $password = 'root';
+    private $password = 'root';
 
     //tablet prefix
     protected $prefix = '';
@@ -38,6 +38,9 @@ class DB{
 
     //result object
     protected $result;
+
+    //num rows
+    protected $numRows = 0;
 
     // default fetch style
     const FETCH_AS_OBJECT = PDO::FETCH_OBJ;
@@ -64,15 +67,22 @@ class DB{
     **/
     public function __construct($host = null, $username = null, $password = null, $database = null, $prefix = '', $port = 3306){
         if(func_num_args() > 0){
-
             $this->host = $host;
             $this->database = $database;
             $this->username = $username;
             $this->password = $password;
             $this->prefix = $prefix;
-            
-            
         }
+
+        return $this;
+
+        // return static::connect(array(
+        //     'driver' => $this->driver,
+        //     'host' => $this->host,
+        //     'database' => $this->database,
+        //     'username' => $this->username,
+        //     'password' => $this->password,
+        // ));
     }
 
     /**
@@ -80,19 +90,43 @@ class DB{
     **/
     public static function connect(array $options){
         try {
-                self::$pdo = new PDO($this->driver.':host='.$this->host.';dbname='.$this->database, $this->username, $this->password);
-                $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, self::FETCH_AS_OBJECT);
-            } catch(PDOException $e){
-                throw $e;
-            }
+            self::$pdo = new PDO($options['driver'].':host='.$options['host'].';dbname='.$options['database'], $options['username'], $options['password']);
+            self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, self::FETCH_AS_OBJECT);
+
+            return new static;
+        } catch(PDOException $e){
+            throw $e;
+        }
+    }
+
+    /**
+    *   set prefix
+    **/
+    public function setPrefix($prefix){
+        $this->prefix = $prefix;
+        return $this;
+    }
+
+    /**
+    *   get prefix
+    **/
+    public function getPrefix(){
+        return $this->prefix;
+    }
+
+    /**
+    *   get table name prefixed with prefix
+    **/
+    public function getPrefixed(){
+
     }
 
     /**
     *   get the current pdo instance
     **/
     public function getPdo(){
-        return $this->pdo;
+        return self::$pdo;
     }
 
     /**
@@ -121,10 +155,19 @@ class DB{
     public function get(){
         $this->query = 'SELECT * FROM '.$this->getTable();
 
-        $this->stmt = $this->pdo->prepare($this->query);
+        $this->stmt = $this->getPdo()->prepare($this->query);
         $this->stmt->execute();
 
+        $this->numRows = $this->stmt->rowCount();
+
         return $this->stmt;
+    }
+
+    /**
+    *   get number of rows returned by current query
+    **/
+    public function numRows(){
+        return $this->numRows;
     }
 
     /**
@@ -156,6 +199,10 @@ class DB{
     **/
     public function getRowObject(){
         return $this->get()->fetch();
+    }
+
+    public function __destruct(){
+        self::$pdo = null;
     }
 
     
